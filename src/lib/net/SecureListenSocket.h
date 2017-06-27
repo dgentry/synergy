@@ -1,6 +1,6 @@
 /*
  * synergy -- mouse and keyboard sharing utility
- * Copyright (C) 2015 Synergy Seamless Inc.
+ * Copyright (C) 2015-2016 Symless Ltd.
  * 
  * This package is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,14 +17,25 @@
 
 #pragma once
 
-#include "base/String.h"
+#include "net/TCPListenSocket.h"
+#include "common/stdset.h"
 
-struct SubscriptionKey {
-	String				m_name;
-	String				m_type;
-	String				m_email;
-	String				m_company;
-	int					m_userLimit;
-	int					m_warnTime;
-	int					m_expireTime;
+class IEventQueue;
+class SocketMultiplexer;
+class IDataSocket;
+
+class SecureListenSocket : public TCPListenSocket{
+public:
+	SecureListenSocket(IEventQueue* events,
+		SocketMultiplexer* socketMultiplexer);
+	~SecureListenSocket();
+
+	// IListenSocket overrides
+	virtual IDataSocket*
+						accept();
+
+private:
+	typedef std::set<IDataSocket*> SecureSocketSet;
+
+	SecureSocketSet		m_secureSocketSet;
 };
